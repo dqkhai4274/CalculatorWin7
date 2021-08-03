@@ -1,6 +1,7 @@
 package model;
 
 import MyException.NotANumberException;
+import view.Button.MyButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class StandardExpression extends ModelExpression {
         this.state = state;
     }
 
-    public void clickOperation(String message){
+    public void clickBasicOperation(String message){
         state.clickOperation(message);
     }
 
@@ -131,25 +132,8 @@ public class StandardExpression extends ModelExpression {
     }
 
     @Override
-    public void update(String message) {
-        if(isDigit(message)){
-            clickDigit(message);
-        }else if(isOperation(message)){
-            clickOperation(message);
-        }else if(message.equals("=")){
-            clickEqual();
-        }else if(message.equals(".")){
-            clickDot();
-        }else if(message == "<--"){
-            clickUndo();
-        }else if(isClear(message)) {
-            clickClear(message);
-        }else if(isExtendedOperation(message)){
-            clickExtendedOperation(message);
-        }
-        else{
-            clickMemory(message);
-        }
+    public void update(MyButton button, String message) {
+        button.click(message);
     }
 
     public static String simplify(double d){

@@ -2,6 +2,7 @@ package view;
 
 import model.ModelExpression;
 import model.StandardExpression;
+import view.Button.MyButton;
 
 import javax.swing.*;
 
@@ -38,6 +39,7 @@ public class Calculator{
             calculator.add(button);
             // every change in button will move to model
             button.register(model);
+            button.setModel(model);
         }
         //display will observe the change in model, then update to screen
         model.register(display);

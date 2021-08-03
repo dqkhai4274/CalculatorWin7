@@ -1,5 +1,7 @@
 package view;
 
+import view.Button.MyButton;
+
 public interface Keyboard {
     String[] standardKeys = {"MC", "MR", "MS", "M+", "M-",
                             "<--", "CE", "C", "NE", "sqrt",

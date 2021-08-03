@@ -1,6 +1,8 @@
 package view;
 
+import view.Button.MyButton;
+
 public interface KeyboardPublisher {
     void register(KeyBoardObserver observer);
-    void notifyObservers(String message);
+    void notifyObservers(MyButton button, String message);
 }

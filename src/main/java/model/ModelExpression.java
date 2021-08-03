@@ -9,6 +9,24 @@ public abstract class ModelExpression implements KeyBoardObserver, ModelPublishe
     public static final String digits = "0123456789";
     public static final String[] selfOperations = {"NE", "sqrt", "%", "1/x"};
 
+    public abstract void clickDigit(String message);
+    public abstract void clickBasicOperation(String message);
+    public abstract void clickExtendedOperation(String message);
+    public abstract void clickMemory(String message);
+    public abstract void clickClear(String message);
+    public abstract void clickUndo();
+    public abstract void clickEqual();
+    public abstract void clickDot();
+    public void clickParenthese(String message){
+        //default mode is not support
+        throw new UnsupportedOperationException();
+    }
+    public void clickUnit(String message){
+        throw new UnsupportedOperationException();
+    }
+
+
+
     public static boolean isDigit(String message){
         return digits.contains(message);
     }
