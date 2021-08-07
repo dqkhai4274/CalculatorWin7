@@ -1,42 +1,39 @@
 package view;
 
 import model.ModelExpression;
-import model.StandardExpression;
-import view.Button.MyButton;
+import view.Button.MyButtonInterface;
+import view.display.ResultDisplay;
+import view.keyboard.Keyboard;
+import view.menu.ProgrammerModeMenuItem;
+import view.menu.ScientificModeMenuItem;
+import view.menu.StandardModeMenuItem;
+
 
 import javax.swing.*;
 
-public class Calculator{
+public abstract class Calculator extends JFrame{
     public static final int FRAME_WIDTH = 325;
     public static final int FRAME_HEIGHT = 400;
     public static final int W_SPACE = 10;
     public static final int H_SPACE = 10;
     public static final int X_TOPLEFT = 30;
     public static final int Y_TOPLEFT = 20;
-    public static final int HEIGHT = 30;
-    public static final int WIDTH = 30;
 
-    private JFrame calculator;
     private Keyboard keyboard;
-    private JMenuBar menuBar = new JMenuBar();
     private ResultDisplay display;
     private ModelExpression model;
 
-    // default mode is standard mode
     public Calculator(){
-        calculator = new JFrame("view.Calculator");
-        calculator.setSize(FRAME_WIDTH, FRAME_HEIGHT);
-        initMenuBar();
-        display = new StandardDisplay();
-        keyboard = new StandardKeyboard();
-        // for handle logic and data
-        model = new StandardExpression();
+        super("Calculator");
+        this.setJMenuBar(initMenuBar());
+        // default mode is standard mode
+        setup();
 
-        calculator.setJMenuBar(menuBar);
-        calculator.add(display.getOldDisplay());
-        calculator.add(display.getDisplayEntry());
-        for(MyButton button : keyboard.buildButtons()) {
-            calculator.add(button);
+        this.add(display.getOldDisplay());
+        this.add(display.getDisplayEntry());
+
+        for(MyButtonInterface button : keyboard.buildButtons()) {
+            this.add((AbstractButton) button);
             // every change in button will move to model
             button.register(model);
             button.setModel(model);
@@ -44,30 +41,62 @@ public class Calculator{
         //display will observe the change in model, then update to screen
         model.register(display);
 
-        calculator.setLayout(null);
-        calculator.setVisible(true);
+        this.setLayout(null);
+        this.setVisible(true);
     }
 
-    void initMenuBar(){
+    public abstract void setup();
+
+    public JMenuBar initMenuBar(){
+        JMenuBar menuBar = new JMenuBar();
         JMenu viewMenu = new JMenu("View");
-        viewMenu.add(new MyMenuItem( "Standard"));
-        viewMenu.add(new MyMenuItem( "Scientific"));
-        viewMenu.add(new MyMenuItem("Programmer"));
-        viewMenu.add(new MyMenuItem( "Statistics"));
-        viewMenu.add(new MyMenuItem( "History"));
-        viewMenu.add(new MyMenuItem("Digit Group"));
-
-        JMenu editMenu = new JMenu("Edit");
-        editMenu.add(new MyMenuItem( "Copy"));
-        editMenu.add(new MyMenuItem( "Paste"));
-        editMenu.add(new MyMenuItem("History"));
-
-        JMenu helpMenu = new JMenu("Help");
-        helpMenu.add(new MyMenuItem( "View Help"));
-        helpMenu.add(new MyMenuItem( "About view.Calculator"));
+        viewMenu.add(new StandardModeMenuItem("Standard", this));
+        viewMenu.add(new ScientificModeMenuItem( "Scientific", this));
+        viewMenu.add(new ProgrammerModeMenuItem("Programmer", this));
+//        viewMenu.add(new MyMenuItem( "Statistics"));
+//        viewMenu.add(new MyMenuItem( "History"));
+//        viewMenu.add(new MyMenuItem("Digit Group"));
+//
+//        JMenu editMenu = new JMenu("Edit");
+//        editMenu.add(new MyMenuItem( "Copy"));
+//        editMenu.add(new MyMenuItem( "Paste"));
+//        editMenu.add(new MyMenuItem("History"));
+//
+//        JMenu helpMenu = new JMenu("Help");
+//        helpMenu.add(new MyMenuItem( "View Help"));
+//        helpMenu.add(new MyMenuItem( "About view.Calculator"));
 
         menuBar.add(viewMenu);
-        menuBar.add(editMenu);
-        menuBar.add(helpMenu);
+//        menuBar.add(editMenu);
+//        menuBar.add(helpMenu);
+        return menuBar;
+    }
+
+    public void setKeyboard(Keyboard keyboard) {
+        this.keyboard = keyboard;
+    }
+
+    public void setDisplay(ResultDisplay display){
+        this.display = display;
+    }
+
+    public void setModel(ModelExpression model){
+        this.model = model;
+    }
+
+    public Keyboard getKeyboard(){
+        return keyboard;
+    }
+
+    public ResultDisplay getDisplay(){
+        return this.display;
+    }
+
+    public ModelExpression getModel(){
+        return this.model;
+    }
+
+    public void setWindowSize(int width, int height){
+        this.setSize(width, height);
     }
 }

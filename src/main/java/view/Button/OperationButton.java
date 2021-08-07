@@ -8,6 +8,6 @@ public class OperationButton extends MyButton {
 
     @Override
     public void click(String message) {
-        getMyModel().clickBasicOperation(message);
+        getMyModel().clickOperation(message);
     }
 }

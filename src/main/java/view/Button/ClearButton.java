@@ -8,6 +8,6 @@ public class ClearButton extends MyButton {
 
     @Override
     public void click(String message) {
-        getMyModel().clickMemory(message);
+        getMyModel().clickClear(message);
     }
 }
