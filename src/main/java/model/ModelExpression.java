@@ -62,7 +62,8 @@ public abstract class ModelExpression implements KeyBoardObserver, ModelPublishe
                     break;
             }
         }catch(NumberFormatException e){
-            System.err.println("cant store this message");
+            // if message is not a decimal, we recall old memory
+            state.clickMemoryRecall();
         }
     }
 

@@ -33,11 +33,11 @@ public class IntegerState implements State {
             model.updateLastElement(simplify(model.getOperand()));
         }
         count++;
-        model.notifyObservers("", model.getExpression());
     }
 
     @Override
     public void clickMemoryRecall() {
+
     }
 
     public void clickMonoOperation(String message) {

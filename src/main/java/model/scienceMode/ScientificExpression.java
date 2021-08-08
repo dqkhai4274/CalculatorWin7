@@ -27,6 +27,7 @@ public class ScientificExpression extends ModelExpression {
     @Override
     public void clickDigit(String message) {
         state.clickDigit(message);
+        notifyObservers("", getExpression());
     }
 
     @Override
@@ -66,10 +67,13 @@ public class ScientificExpression extends ModelExpression {
     @Override
     public void clickParentheses(String message){
         // if last character in are operator, add an *
-        if(!InfixExpression.isOperator(expression.peek()) && message == "(")
+        if(!expression.isEmpty() && !InfixExpression.isOperator(expression.peek()) && message.equals("("))
             addToExpression("*");
         addToExpression(message);
         notifyObservers("", getExpression());
+        //then reset operand to zero, change state to integer
+        setOperand(0);
+        changeState(new IntegerState(this));
     }
 
     @Override

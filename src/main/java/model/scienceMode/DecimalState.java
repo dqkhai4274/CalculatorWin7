@@ -27,7 +27,6 @@ public class DecimalState implements State {
         model.setOperand(round(model.getOperand() + coeff * num, numBehindDot));
         coeff /= 10;
         model.updateLastElement(ModelExpression.simplify(model.getOperand()));
-        model.notifyObservers("", model.getExpression());
     }
 
     private static double round(double a, int num) {

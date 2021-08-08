@@ -36,8 +36,9 @@ public class OperationState implements State {
 
     @Override
     public void clickMemoryRecall() {
-        tempOperand = model.getMemory();
-        model.notifyObservers(ModelExpression.simplify(tempOperand), "");
+        model.setOperand(model.getMemory());
+        model.addToExpression(ModelExpression.simplify(model.getMemory()));
+        model.notifyObservers("", model.getExpression());
     }
 
     public void clickMonoOperation(String message){
