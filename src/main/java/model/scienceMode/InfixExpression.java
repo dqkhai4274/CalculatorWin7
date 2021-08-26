@@ -1,6 +1,7 @@
 package model.scienceMode;
 
 
+import MyException.NotANumberException;
 import org.apache.commons.numbers.gamma.Gamma;
 
 import java.util.Arrays;
@@ -19,7 +20,7 @@ public class InfixExpression {
     private Stack<Double> operands = new Stack<>();
     private Stack<String> operators = new Stack<>();
 
-    public double evaluate(Stack<String> expression) throws EmptyStackException {
+    public double evaluate(Stack<String> expression) throws EmptyStackException, NotANumberException {
         String[] strings = new String[expression.size()];
         int i = 0;
         for(String s : expression){
@@ -29,7 +30,7 @@ public class InfixExpression {
     }
 
     // expression in String[] array, vd: 4,+,cos,(,ln,7,)
-    public double evaluate(String[] expression) throws EmptyStackException{
+    public double evaluate(String[] expression) throws EmptyStackException, NotANumberException {
         for(String token : expression) {
             if (isOperator(token)) {
                 // case : precedence's current token greater than precedence's top stack then we must calculate the expression before this token
@@ -64,7 +65,7 @@ public class InfixExpression {
         return operands.peek();
     }
 
-    private void helper() throws EmptyStackException {
+    private void helper() throws EmptyStackException, NotANumberException {
         Stack<Double> reverseOperands = new Stack<>();
         Stack<String> reverseOperators = new Stack<>();
         Double tmp;
@@ -134,20 +135,18 @@ public class InfixExpression {
         return 100;
     }
 
-    public static double calculate(double a, String operator){
+    public static double calculate(double a, String operator) throws NotANumberException {
         switch (operator){
             case "ln":
-                try{
-                    return Math.log(a);
-                }catch (ArithmeticException e){
-                    System.err.println("a must be positive");
+                if(a <= 0){
+                    throw new NotANumberException();
                 }
+                return Math.log(a);
             case "log":
-                try{
-                    return Math.log10(a);
-                }catch(ArithmeticException e){
-                    System.err.println("a must be positive");
+                if(a <= 0){
+                    throw new NotANumberException();
                 }
+                return Math.log10(a);
             case "sinh":
                 return Math.sinh(a);
             case "sin":
@@ -163,11 +162,10 @@ public class InfixExpression {
             case "sqr":
                 return Math.pow(a, 2);
             case "fact":
-                try{
-                    return Gamma.value(a+1);
-                }catch (ArithmeticException e){
-                    System.err.println("a must be positive");
+                if(a < 0){
+                    throw new NotANumberException();
                 }
+                return Gamma.value(a+1);
             case "dms":
                 //not implement, degree, minutes, second
                 return 0;
@@ -176,19 +174,17 @@ public class InfixExpression {
             case "cuberoot":
                 return Math.cbrt(a);
             case "sqrt":
-                try{
-                    return Math.sqrt(a);
-                }catch (ArithmeticException e){
-                    System.err.println("a must be positive");
+                if(a < 0){
+                    throw new NotANumberException();
                 }
+                return Math.sqrt(a);
             case "NE":
                 return -a;
             case "recipoc":
-                try{
-                    return 1/a;
-                }catch(ArithmeticException e){
-                    System.err.println("divide by zero");
+                if(a == 0){
+                    throw new NotANumberException();
                 }
+                return 1/a;
             case "Int":
                 return (int) a;
             case "cube":
@@ -198,7 +194,7 @@ public class InfixExpression {
         }
     }
 
-    public static double calculate(double a, double b, String operator){
+    public static double calculate(double a, double b, String operator) throws NotANumberException {
         switch (operator){
             case "^":
                 return Math.pow(a, b);
@@ -209,23 +205,16 @@ public class InfixExpression {
             case "*":
                 return a * b;
             case "/":
-                try{
-                    return a/b;
-                }catch(ArithmeticException e){
-                    System.err.println("cant divide by zero");
+                if(b == 0){
+                    throw new NotANumberException();
                 }
+                return a/b;
             case "mod":
-                if(a != (int)a || b != (int)b){
+                if(a != (int)a || b != (int)b || b == 0){
                     System.err.println("can't module a decimal number");
-                    throw new ArithmeticException();
+                    throw new NotANumberException();
                 }else{
                     return a%b;
-                }
-            case "%":
-                try{
-                    return a%b;
-                }catch (ArithmeticException e){
-                    System.err.println("result is undefine");
                 }
             case "+":
                 return a+b;
@@ -237,6 +226,10 @@ public class InfixExpression {
 
     public static void main(String[] args){
         InfixExpression a = new InfixExpression();
-        System.out.println(args + "=" + a.evaluate(args));
+        try{
+            System.out.println(args + "=" + a.evaluate(args));
+        }catch(NotANumberException e){
+            System.err.println("syntax error");
+        }
     }
 }

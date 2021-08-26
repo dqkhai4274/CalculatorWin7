@@ -1,76 +1,19 @@
 package model;
 
-import view.Button.Clickable;
+import model.handler.Handler;
 import view.keyboard.KeyBoardObserver;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public abstract class ModelExpression implements KeyBoardObserver, ModelPublisher {
-    private double memory;
-    protected State state;
-    private String lastMessage="0";
     private List<ModelObserver> observers = new ArrayList<>();
-
-    private String operation = "";
-    private double result;
-    private double operand;
-    private double operand1;
-
-    public abstract void clickDigit(String message);
-    public abstract void clickOperation(String message);
-    public abstract void clickMonoOperation(String message);
-    public abstract void clickEqual();
-    public abstract void clickDot();
-    public abstract void clickUndo();
-
-    public void clickClear(String message){
-        if(message.equals("C")){
-            setOperand(0);
-            setOperand1(0);
-            setResult(0);
-            setOperation("");
-            notifyObservers("0", " ");
-        }else {
-            setOperand(0);
-            notifyObservers("0", "");
-        }
-    }
-
-    public void clickParentheses(String message){
-        throw new UnsupportedOperationException();
-    }
-
-    public void clickMemory(String message){
-        try{
-            double temp = Double.parseDouble(lastMessage);
-            switch (message){
-                case "MC":
-                    memory = 0;
-                    break;
-                case "MR":
-                    state.clickMemoryRecall();
-                    break;
-                case "MS":
-                    memory = temp;
-                    break;
-                case "M+":
-                    memory += temp;
-                    break;
-                case "M-":
-                    memory -= temp;
-                    break;
-            }
-        }catch(NumberFormatException e){
-            // if message is not a decimal, we recall old memory
-            state.clickMemoryRecall();
-        }
-    }
-
-    @Override
-    public void update(Clickable button, String message) {
-        button.click(OperationToWord(message));
-    }
+    private Stack<String> expression = new Stack<>();
+    private ArrayList<Handler> handlers = new ArrayList<>();
+    private double previousResult;
+    private double memory;
 
     @Override
     public void register(ModelObserver observer) {
@@ -79,50 +22,65 @@ public abstract class ModelExpression implements KeyBoardObserver, ModelPublishe
 
     @Override
     public void notifyObservers(String messageForEntry, String messageForOld) {
-        lastMessage = messageForEntry;
         for(ModelObserver observer: observers){
             observer.update(messageForEntry, messageForOld);
         }
     }
 
-    public double getMemory(){
-        return this.memory;
+    public void addToExpression(String s){
+        expression.push(s);
     }
 
-    public void changeState(State state){
-        this.state = state;
+    public void updateLastElement(String s){
+        if(!expression.isEmpty())
+            expression.pop();
+        expression.push(s);
     }
 
-    public void setOperand(double operand){
-        this.operand = operand;
+    public String toString(){
+        StringBuffer buffer = new StringBuffer();
+        for(String s : expression){
+            buffer.append(s);
+        }
+        return buffer.toString();
     }
 
-    public double getOperand(){
-        return this.operand;
+    public Stack<String> getExpression(){
+        return this.expression;
     }
 
-    public void setOperation(String operation){
-        this.operation = operation;
+    public void reset(){
+        this.expression = new Stack<>();
     }
 
-    public String getOperation(){
-        return this.operation;
+    protected void setHandler(int i, Handler handler){
+        handlers.add(i, handler);
+        if(i > 0) {
+            handlers.get(i - 1).setNext(handler);
+            handler.setNext(null);
+        }
     }
 
-    public void setResult(double result){
-        this.result = result;
+    @Override
+    public void update(String message){
+        // let handler handle message
+        handlers.get(0).handle(message);
     }
 
-    public double getResult() {
-        return this.result;
+    public void setPreviousResult(double previousResult) {
+        this.previousResult = previousResult;
     }
 
-    public double getOperand1(){
-        return this.operand1;
+    public double getPreviousResult() {
+        return previousResult;
     }
 
-    public void setOperand1(double operand1){
-        this.operand1 = operand1;
+    public double getMemory() {
+        return memory;
+    }
+
+    public void setMemory(double memory) {
+        this.memory = memory;
     }
 
     public static String simplify(double d){

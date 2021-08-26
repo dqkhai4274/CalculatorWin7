@@ -1,7 +1,6 @@
 package view;
 
 import model.ModelExpression;
-import view.Button.MyButtonInterface;
 import view.display.ResultDisplay;
 import view.keyboard.Keyboard;
 import view.menu.ProgrammerModeMenuItem;
@@ -10,6 +9,7 @@ import view.menu.StandardModeMenuItem;
 
 
 import javax.swing.*;
+import java.awt.*;
 
 public abstract class Calculator extends JFrame{
     public static final int FRAME_WIDTH = 325;
@@ -26,17 +26,18 @@ public abstract class Calculator extends JFrame{
     public Calculator(){
         super("Calculator");
         this.setJMenuBar(initMenuBar());
+        // set at center of display
+        this.setLocation(400, 300);
         // default mode is standard mode
         setup();
 
         this.add(display.getOldDisplay());
         this.add(display.getDisplayEntry());
 
-        for(MyButtonInterface button : keyboard.buildButtons()) {
-            this.add((AbstractButton) button);
+        for(MyButton button : keyboard.buildButtons()) {
+            this.add(button);
             // every change in button will move to model
             button.register(model);
-            button.setModel(model);
         }
         //display will observe the change in model, then update to screen
         model.register(display);
@@ -86,10 +87,6 @@ public abstract class Calculator extends JFrame{
 
     public Keyboard getKeyboard(){
         return keyboard;
-    }
-
-    public ResultDisplay getDisplay(){
-        return this.display;
     }
 
     public ModelExpression getModel(){

@@ -1,15 +1,15 @@
-package view.Button;
+package view;
 
-import model.ModelExpression;
 import view.keyboard.KeyBoardObserver;
+import view.keyboard.KeyboardPublisher;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public abstract class MyButton extends JButton implements MyButtonInterface {
-    private ModelExpression model;
+public class MyButton extends JButton implements ActionListener, KeyboardPublisher {
     private ArrayList<KeyBoardObserver> observers = new ArrayList<>();
 
     public MyButton(String character){
@@ -18,18 +18,10 @@ public abstract class MyButton extends JButton implements MyButtonInterface {
         addActionListener(this);
     }
 
-    public ModelExpression getMyModel(){
-        return this.model;
-    }
-
-    public void setModel(ModelExpression model){
-        this.model = model;
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         MyButton tmp = (MyButton) e.getSource();
-        notifyObservers(this, tmp.getText());
+        notifyObservers(tmp.getText());
     }
 
     @Override
@@ -38,9 +30,9 @@ public abstract class MyButton extends JButton implements MyButtonInterface {
     }
 
     @Override
-    public void notifyObservers(Clickable button, String message) {
+    public void notifyObservers(String message) {
         for(KeyBoardObserver o : observers){
-            o.update(button, message);
+            o.update(message);
         }
     }
 
